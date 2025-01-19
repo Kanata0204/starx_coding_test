@@ -1,0 +1,68 @@
+@startuml
+entity Tenant {
+  * tenant_id : uuid
+  * name : string
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+entity User {
+  * user_id : uuid
+  * tenant_id : uuid
+  * email : string
+  * password_digest : string
+  * role : string
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+entity UploadedData {
+  * data_id : uuid
+  * tenant_id : uuid
+  * uploaded_by : uuid
+  * file_path : string
+  * record_count : int
+  * upload_date : datetime
+  * status : string
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+entity AnalysisResult {
+  * result_id : uuid
+  * data_id : uuid
+  * tenant_id : uuid          ' 冗長性が懸念されるが、パフォーマンス向上のため維持可能 '
+  * result_summary : string
+  * created_at : datetime
+}
+
+entity VisualizationSetting {
+  * setting_id : uuid
+  * tenant_id : uuid
+  * user_id : uuid
+  * configuration : json
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+entity Notification {
+  * notification_id : uuid
+  * tenant_id : uuid
+  * user_id : uuid
+  * type : string
+  * message : text
+  * sent_at : datetime
+}
+
+Tenant ||--o{ User : "1対多"
+Tenant ||--o{ UploadedData : "1対多"
+User ||--o{ UploadedData : "1対多"
+UploadedData ||--|| AnalysisResult : "1対1または1対多"
+
+Tenant ||--o{ VisualizationSetting : "1対多"
+User ||--o{ VisualizationSetting : "1対多"
+
+Tenant ||--o{ Notification : "1対多"
+User ||--o{ Notification : "1対多"
+
+@enduml
